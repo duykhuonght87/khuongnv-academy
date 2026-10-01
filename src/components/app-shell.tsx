@@ -1,8 +1,18 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { BookOpen, Gauge, LogOut, Settings } from "lucide-react";
 import { Brand } from "./brand";
 
 export function AppShell({ children, active = "dashboard" }: { children: React.ReactNode; active?: string }) {
+  const router = useRouter();
+  async function signOut() {
+    const { createClient } = await import("@/lib/supabase/client");
+    await createClient()?.auth.signOut();
+    router.replace("/login");
+    router.refresh();
+  }
   return (
     <div className="app-layout">
       <aside className="sidebar">
@@ -13,7 +23,7 @@ export function AppShell({ children, active = "dashboard" }: { children: React.R
         </nav>
         <div className="sidebar-bottom">
           <Link href="/dashboard"><Settings /> Tài khoản</Link>
-          <Link href="/login"><LogOut /> Đăng xuất</Link>
+          <button type="button" onClick={signOut}><LogOut /> Đăng xuất</button>
         </div>
       </aside>
       <main className="app-main">{children}</main>

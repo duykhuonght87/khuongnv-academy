@@ -9,8 +9,8 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     await supabase?.auth.exchangeCodeForSession(code);
   }
-  if (next === "/reset-password") {
-    return NextResponse.redirect(`${origin}/reset-password`);
+  if (next?.startsWith("/") && !next.startsWith("//")) {
+    return NextResponse.redirect(`${origin}${next}`);
   }
   const supabase = await createClient();
   const { data: { user } } = (await supabase?.auth.getUser()) ?? { data: { user: null } };

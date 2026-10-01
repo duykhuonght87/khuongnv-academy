@@ -18,7 +18,7 @@ export function RevenueChart({ compact = false, data }: { compact?: boolean; dat
   const compactAmount = (amount: number) => amount >= 1000000 ? `${(amount / 1000000).toFixed(1).replace(".0", "")}M` : amount >= 1000 ? `${Math.round(amount / 1000)}K` : String(amount);
   return <div className={`revenue-chart ${compact ? "compact" : ""}`}>
     <div className="chart-grid-lines"><i /><i /><i /><i /></div>
-    <div className="chart-bars">{series.map(item => <div key={item.label}><span style={{ height: `${item.amount ? Math.max(8, Math.round(item.amount / max * 100)) : 2}%` }}><b>{compactAmount(item.amount)}</b></span><small>{item.label}</small></div>)}</div>
+    <div className="chart-bars" style={{ gridTemplateColumns: `repeat(${series.length}, minmax(22px, 1fr))` }}>{series.map((item, index) => <div key={`${item.label}-${index}`}><span style={{ height: `${item.amount ? Math.max(8, Math.round(item.amount / max * 100)) : 2}%` }}><b>{compactAmount(item.amount)}</b></span><small>{series.length <= 10 || index % 5 === 0 || index === series.length - 1 ? item.label : ""}</small></div>)}</div>
   </div>;
 }
 

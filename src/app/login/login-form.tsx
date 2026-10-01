@@ -7,7 +7,7 @@ import { ArrowUpRight, Eye, EyeOff, LoaderCircle } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
-export function LoginForm({ initialMode = "login" }: { initialMode?: "login" | "signup" }) {
+export function LoginForm({ initialMode = "login", nextPath }: { initialMode?: "login" | "signup"; nextPath?: string }) {
   const router = useRouter();
   const [mode, setMode] = useState<"login" | "signup">(initialMode);
   const [showPassword, setShowPassword] = useState(false);
@@ -38,15 +38,19 @@ export function LoginForm({ initialMode = "login" }: { initialMode?: "login" | "
     const userId = result.data.user?.id;
     if (!userId) return setMessage("Không thể xác định tài khoản. Vui lòng thử lại.");
     const { data: profile } = await supabase!.from("profiles").select("role").eq("id", userId).single();
-    router.push(profile?.role === "admin" ? "/admin" : "/hoc-vien");
+    router.push(nextPath ?? (profile?.role === "admin" ? "/admin" : "/hoc-vien"));
     router.refresh();
   }
 
   async function handleGoogleLogin() {
     if (!isSupabaseConfigured) return router.push("/hoc-vien");
     const supabase = createClient();
-    await supabase!.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${location.origin}/auth/callback` } });
+    const callback = nextPath ? `${location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}` : `${location.origin}/auth/callback`;
+    const { error } = await supabase!.auth.signInWithOAuth({ provider: "google", options: { redirectTo: callback } });
+    if (error) setMessage(`Google Login chưa sẵn sàng: ${error.message}`);
   }
+
+  const googleEnabled = process.env.NEXT_PUBLIC_GOOGLE_AUTH_ENABLED === "true";
 
   return (
     <main className="auth-page">
@@ -72,8 +76,7 @@ export function LoginForm({ initialMode = "login" }: { initialMode?: "login" | "
             <button className={mode === "login" ? "active" : ""} onClick={() => setMode("login")} type="button">Đăng nhập</button>
             <button className={mode === "signup" ? "active" : ""} onClick={() => setMode("signup")} type="button">Tạo tài khoản</button>
           </div>
-          <button className="google-button" type="button" onClick={handleGoogleLogin}><span>G</span> Tiếp tục với Google</button>
-          <div className="auth-divider"><span>hoặc dùng email</span></div>
+          {googleEnabled && <><button className="google-button" type="button" onClick={handleGoogleLogin}><span>G</span> Tiếp tục với Google</button><div className="auth-divider"><span>hoặc dùng email</span></div></>}
           <form onSubmit={handleSubmit}>
             <label>Email<input name="email" type="email" autoComplete="email" placeholder="ban@email.com" required /></label>
             <label>Mật khẩu<div className="password-field"><input name="password" type={showPassword ? "text" : "password"} minLength={6} autoComplete={mode === "login" ? "current-password" : "new-password"} placeholder="Tối thiểu 6 ký tự" required /><button type="button" onClick={() => setShowPassword((value) => !value)} aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}>{showPassword ? <EyeOff /> : <Eye />}</button></div></label>

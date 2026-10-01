@@ -25,7 +25,7 @@ export default async function AdminOverviewPage() {
     </section>
     <section className="admin-grid-main">
       <article className="admin-card revenue-card">
-        <div className="admin-card-head"><div><span>DOANH THU</span><h2>7 ngày gần nhất</h2></div><div className="segmented"><button className="active">7 ngày</button><button>30 ngày</button><button>Tháng này</button></div></div>
+        <div className="admin-card-head"><div><span>DOANH THU</span><h2>7 ngày gần nhất</h2></div><Link className="text-link" href="/admin/revenue">Xem phân tích <ArrowUpRight /></Link></div>
         <RevenueChart data={revenueSeries} />
       </article>
       <article className="admin-card funnel-card">
@@ -42,6 +42,6 @@ export default async function AdminOverviewPage() {
       <div className="admin-card-head"><div><span>GIAO DỊCH</span><h2>Đơn hàng gần đây</h2></div><Link href="/admin/orders">Tất cả đơn <ArrowUpRight /></Link></div>
       <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Sản phẩm</th><th>Giá trị</th><th>Trạng thái</th><th>Thời gian</th></tr></thead><tbody>{orders.slice(0, 5).map(order => <tr key={order.id}><td><b>{order.id}</b></td><td>{order.customer}</td><td>{order.product}</td><td>{formatVnd(order.amount)}</td><td><StatusPill status={order.status} /></td><td>{order.createdAt}</td></tr>)}{orders.length === 0 && <tr><td colSpan={6}>Chưa có đơn hàng thực tế.</td></tr>}</tbody></table></div>
     </section>
-    <div className="admin-quick-actions"><Link href="/admin/customers"><UserPlus /> Thêm khách hàng</Link><Link href="/admin/products"><ShoppingBag /> Quản lý sản phẩm</Link></div>
+    <div className="admin-quick-actions"><Link href="/admin/customers"><UserPlus /> Quản lý khách hàng</Link><Link href="/admin/products"><ShoppingBag /> Quản lý sản phẩm</Link></div>
   </AdminShell>;
 }
