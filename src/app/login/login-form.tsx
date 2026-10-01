@@ -51,7 +51,7 @@ export function LoginForm({ initialMode = "login" }: { initialMode?: "login" | "
   return (
     <main className="auth-page">
       <div className="auth-visual">
-        <Link className="auth-brand" href="/"><Brand /></Link>
+        <div className="auth-brand"><Brand /></div>
         <div className="auth-quote">
           <span>BUILD YOUR SYSTEM</span>
           <h1>Tiến bộ không đến từ cảm hứng.<br /><em>Nó đến từ hệ thống.</em></h1>
