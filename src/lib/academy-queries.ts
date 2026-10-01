@@ -119,7 +119,7 @@ export async function getAdminCustomers(): Promise<AdminCustomer[]> {
   const supabase = await createClient();
   if (!supabase) return [];
   const [profilesResult, ordersResult, accessResult, progressResult] = await Promise.all([
-    supabase.from("profiles").select("id,full_name,phone,source,created_at,last_active_at").neq("role", "admin").order("created_at", { ascending: false }),
+    supabase.from("profiles").select("id,full_name,email,phone,source,created_at,last_active_at").neq("role", "admin").order("created_at", { ascending: false }),
     supabase.from("orders").select("user_id,customer_email,total_amount,status"),
     supabase.from("user_product_access").select("user_id"),
     supabase.from("lesson_progress").select("user_id,completed_at"),
@@ -137,7 +137,7 @@ export async function getAdminCustomers(): Promise<AdminCustomer[]> {
   return (profilesResult.data ?? []).map(profile => ({
     id: profile.id,
     name: profile.full_name || "Học viên",
-    email: emails.get(profile.id) ?? "Chưa có đơn hàng",
+    email: profile.email || emails.get(profile.id) || "Chưa cập nhật email",
     phone: profile.phone || "—",
     joined: dateVi(profile.created_at),
     source: profile.source || "Trực tiếp",

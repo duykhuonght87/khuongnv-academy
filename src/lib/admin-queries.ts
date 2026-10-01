@@ -45,11 +45,11 @@ export async function getAdminOrders(): Promise<AdminOrder[]> {
 export async function getAdminCounts() {
   const supabase = await createClient();
   if (!supabase) return { customers: 0, students: 0 };
-  const [customers, students] = await Promise.all([
+  const [customers, access] = await Promise.all([
     supabase.from("profiles").select("id", { count: "exact", head: true }).neq("role", "admin"),
-    supabase.from("enrollments").select("user_id", { count: "exact", head: true }),
+    supabase.from("user_product_access").select("user_id"),
   ]);
-  return { customers: customers.count ?? 0, students: students.count ?? 0 };
+  return { customers: customers.count ?? 0, students: new Set((access.data ?? []).map(row => row.user_id)).size };
 }
 
 export function getRevenueMetrics(orders: AdminOrder[]) {
